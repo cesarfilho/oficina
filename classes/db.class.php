@@ -1,0 +1,1 @@
+class db extends MySQL {}

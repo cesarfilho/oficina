@@ -1,0 +1,98 @@
+<div id="busca_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-header">
+        <h3 id="myModalLabel">Busca #####</h3>
+    </div>
+    <div class="modal-body">
+
+        <div class="row form-inline input-prepend">
+
+            <span class="add-on"><i class="icon-home icon-black"></i> Busca </span>
+            <input type="text" id="edBusca" name="edBusca" class="input-xlarge"/>
+
+        </div>
+
+        <div id='conteudo'>
+            <table width="250" cellpadding="3" class="table table-hover table-bordered table-sieve">
+                <thead>
+                <tr>
+                    <th scope="col">Marca</th>
+                    <th scope="col">Modelo</th>
+                    <th scope="col">Placa</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="edit" field="1" field_id="1">1</td>
+                    <td class="edit" field="2" filed_id="2">2</td>
+                    <td class="edit" field="3" field_id="3">3</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- /input-group -->
+    </div>
+    <div class="modal-footer">
+        <input type="hidden" id="cliente_id" value=""/>
+        <!--        
+            <button id = 'selecao_busca' class="btn btn-primary seleciona">Seleciona</button>
+            <a href="javascript:void(0);" id="'+cliente.id+'" cliente_id="'+cliente.id+'" class="delete_cliente btn btn-danger"><i class="icon-remove icon-white"></i></a></td>';
+        -->
+
+    </div>
+</div><!-- /.row -->
+
+<script>
+    //campo busca na tela
+
+    function busca(e) {
+        clearTimeout($.data(this, 'timer'));
+        $(this).data('timer', setTimeout(search, 100));
+    };
+
+    function search(force) {
+        var existingString = $("#edBusca").val();
+        //if (!force && existingString.length < 3) return; //wasn't enter, not > 2 char
+
+        getlistaVeiculosBusca(existingString);
+        $("#edBusca").focus();
+    }
+
+    function MarcaSelecionado(element) {
+        //*****************************************
+        //marca linha selecionada com uma cor de depois coloca o numero do id no campo oculto. Se apertar botao selecionar coloca o nome no campo.
+        //http://tableless.com.br/melhorando-exibicao-tabelas-jquery/
+        $('#indicator').show();
+        SalvaVeiculoSelecionado($('#busca_modal input#cliente_id').attr('value'),$(element).attr('veiculo_id'));
+    	$('#indicator').hide();    
+        $("#busca_modal").modal("hide");
+    }
+
+    function SalvaVeiculoSelecionado(cdcliente,cdveiculo){
+    	//salva informaçoes no banco
+	    $.post('Controller.php',
+	        {
+	            action: 'salvaVeiculoCliente',
+	            veiculo: cdveiculo,
+	            cliente: cdcliente
+	        },
+	        function (data) {
+                    return('salvaVeiculoCliente - 1');
+	        },
+	        "json"
+	    );
+	    
+	    $.post('Controller.php',
+        {
+            action: 'get_cliente_veiculo',
+            cliente: cdcliente
+        },
+        function (data) {
+            CriarGridVeiculosCliente(data);
+            return('CriarGridVeiculosCliente - 1');            
+        },
+        "json"
+    );
+    }
+</script>
+
